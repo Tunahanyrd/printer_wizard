@@ -1,237 +1,139 @@
 # Universal Printer Wizard
 
-A universal, intelligent printer discovery and configuration tool for Linux systems using CUPS. This TUI application automatically detects network printers and configures them with minimal user intervention.
+A smart printer discovery and configuration tool for Linux systems using CUPS. Automatically detects network printers with minimal user intervention.
 
 ## Features
 
-- **🔍 Passive Network Discovery**: Automatically finds printers on your network using mDNS/Zeroconf
-- **🎯 Active IP Scanning**: Manual printer discovery by IP address with port detection (IPP, Raw Socket, LPD)
-- **🧠 Intelligent Model Detection**: Multi-protocol model identification (IPP, SNMP, PJL)
-- **⚡ Async Architecture**: Fast, non-blocking operations for efficient scanning
-- **🎨 Rich TUI**: Beautiful terminal interface with interactive prompts
-- **📦 PPD Support**: Use either CUPS model names or custom PPD files
-- **🔧 CUPS Integration**: Seamless printer installation and configuration
+- 🔍 **Automatic Discovery**: mDNS/Zeroconf passive scanning
+- 🎯 **Manual Discovery**: IP-based active scanning (IPP, Raw Socket, LPD)
+- 🧠 **Smart Detection**: Multi-protocol model identification (IPP, SNMP, PJL)
+- 🎨 **Beautiful TUI**: Rich terminal interface with interactive prompts
+- ⚡ **Fast**: Async architecture for quick scanning
+- 📦 **Flexible**: Supports PPD files or CUPS model names
 
 ## Requirements
 
-- Linux OS with CUPS installed
-- Python 3.8+
-- Root/sudo access (required for printer installation)
+- Linux with CUPS installed
+- Python 3.9+
+- Root/sudo access
 
-## Installation
+## Quick Start
 
-1. Clone the repository:
-
+**Option 1: Using setup script (Recommended)**
 ```bash
-git clone https://github.com/yourusername/printer_wizard.git
+git clone https://github.com/Tunahanyrd/printer_wizard.git
 cd printer_wizard
+./setup.sh
 ```
 
-2. Install dependencies:
-
+**Option 2: Manual installation with virtual environment**
 ```bash
+git clone https://github.com/Tunahanyrd/printer_wizard.git
+cd printer_wizard
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
+
+# Run the wizard
+sudo ./venv/bin/python3 printer_wizard.py
 ```
 
-3. Ensure CUPS is installed and running:
-
+**Option 3: System-wide installation**
 ```bash
-sudo systemctl status cups
+git clone https://github.com/Tunahanyrd/printer_wizard.git
+cd printer_wizard
+pip install -r requirements.txt
+sudo python3 printer_wizard.py
 ```
 
 ## Usage
 
-Run the wizard with sudo privileges:
+### Automatic Discovery (Recommended)
+
+The wizard will scan your network for 5 seconds and list all discovered printers:
 
 ```bash
+# With virtual environment
+sudo ./venv/bin/python3 printer_wizard.py
+
+# Or without virtual environment
 sudo python3 printer_wizard.py
 ```
 
-Or directly from src:
+### Manual Discovery
 
+If automatic discovery doesn't find your printer:
+
+1. Enter the printer's IP address when prompted
+2. The wizard will scan ports and detect the model
+3. Confirm or manually specify the driver
+
+### Driver Options
+
+**Option 1: Let the wizard detect automatically** (works most of the time)
+
+**Option 2: CUPS model name**
 ```bash
-sudo python3 src/tui.py
+lpinfo -m | grep -i "hp"  # Find available drivers
+# Use the exact driver name shown
 ```
 
-### Discovery Modes
+**Option 3: PPD file**
+- Download from manufacturer's website
+- Provide the full path to the `.ppd` or `.ppd.gz` file
 
-**1. Passive Discovery (Recommended)**
+## Project Structure
 
-- Automatically scans the network for 5 seconds
-- Discovers printers announcing themselves via mDNS
-- Zero configuration required
-
-**2. Active Discovery (Manual IP)**
-
-- Enter the printer's IP address manually
-- Scans common printer ports (631, 9100, 515)
-- Useful for printers without mDNS support
-
-### Driver Configuration
-
-The wizard supports two methods for specifying the printer driver:
-
-**Option 1: CUPS Model Name**
-
-```bash
-# Find available drivers
-lpinfo -m | grep -i "your_printer_brand"
-
-# Example output:
-# drv:///sample.drv/laserjet.ppd
+```
+printer_wizard/
+├── src/
+│   ├── tui.py          # Terminal user interface
+│   ├── core.py         # Discovery engine
+│   └── config.py       # CUPS integration
+├── printer_wizard.py   # Main entry point
+├── requirements.txt    # Dependencies
+└── setup.sh           # Quick setup script
 ```
 
-**Option 2: PPD File**
+## How It Works
 
-- Provide the full path to a local PPD file
-- Supports both `.ppd` and `.ppd.gz` formats
-
-## Architecture
-
-The project consists of three main modules:
-
-### `core.py` - Discovery Engine
-
-- **Stage 1**: Passive mDNS/Zeroconf discovery
-- **Stage 2**: Active port scanning (631/IPP, 9100/Raw, 515/LPD)
-- **Stage 3**: Model identification via IPP, SNMP, and PJL protocols
-- **Stage 4**: Orchestration and result aggregation
-
-### `config.py` - CUPS Integration
-
-- Executes `lpadmin` commands
-- Handles both model names (`-m`) and PPD files (`-P`)
-- Manages printer enablement and default printer settings
-
-### `tui.py` - User Interface
-
-- Interactive terminal UI using Rich library
-- Guides users through discovery and installation
-- Handles user input and error messages
-
-## Protocol Support
-
-| Protocol      | Port | Purpose              | Library         |
-| ------------- | ---- | -------------------- | --------------- |
-| mDNS/Zeroconf | 5353 | Passive discovery    | `zeroconf`    |
-| IPP           | 631  | Model identification | `pyipp`       |
-| SNMP          | 161  | Model identification | `pysnmp`      |
-| PJL           | 9100 | Model identification | Built-in socket |
-| Raw Socket    | 9100 | Print protocol       | CUPS native     |
-| LPD           | 515  | Print protocol       | CUPS native     |
-
-## Examples
-
-### Example 1: Automatic Discovery
-
-```bash
-sudo python3 tui.py
-
-# The wizard will:
-# 1. Scan the network automatically
-# 2. List discovered printers
-# 3. Install your selection with detected drivers
-```
-
-### Example 2: Manual IP with Custom PPD
-
-```bash
-sudo python3 tui.py
-
-# When prompted:
-# 1. Skip passive discovery or proceed
-# 2. Enter IP: 192.168.1.100
-# 3. Choose "Use PPD file"
-# 4. Provide path: /path/to/printer.ppd
-```
-
-## Testing
-
-Each module can be tested independently:
-
-```bash
-# Test core discovery engine
-python3 core.py
-
-# Test CUPS configuration
-python3 config.py
-```
+1. **Stage 1**: Passive mDNS/Zeroconf discovery (5 seconds)
+2. **Stage 2**: Active port scanning if needed (631, 9100, 515)
+3. **Stage 3**: Model detection via IPP, SNMP, or PJL
+4. **Stage 4**: CUPS configuration with `lpadmin`
 
 ## Troubleshooting
 
-### Permission Denied
+**No printers found?**
+- Check if printer is on and connected to network
+- Allow ports 631, 9100, 515, 5353 in firewall
+- Try manual IP entry
 
-The `lpadmin` command requires root privileges:
+**Permission denied?**
+- Always run with `sudo`
 
-```bash
-python3 tui.py
-```
-
-### No Printers Found
-
-- Ensure the printer is powered on and connected to the network
-- Check firewall settings (allow ports 631, 9100, 515, 5353)
-- Try manual IP discovery mode
-
-### CUPS Service Not Running
-
+**CUPS not running?**
 ```bash
 sudo systemctl start cups
-sudo systemctl enable cups
 ```
 
-### Missing Dependencies
-
-```bash
-# Install all dependencies
-pip install -r requirements.txt
-
-# Or install individually
-pip install rich pyipp pysnmp zeroconf aiohttp deepmerge yarl
-```
-
-## Dependencies
-
-Core libraries:
-
-- `rich` - Terminal UI framework
-- `pyipp` - IPP protocol client
-- `pysnmp` - SNMP protocol client
-- `zeroconf` - mDNS/Zeroconf discovery
-- `aiohttp` - Async HTTP client
-- `deepmerge` - Dictionary merging utility
-- `yarl` - URL parsing
+**Need more help?**
+- See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for detailed solutions
+- Check [INSTALL.md](INSTALL.md) for installation issues
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](#license) file for details.
+MIT License - see [LICENSE](LICENSE)
 
 ## Acknowledgments
 
-- CUPS (Common UNIX Printing System) for the printing infrastructure
-- The Rich library for the beautiful terminal interface
-- All the open-source protocol libraries that make this possible
-
-## Project Status
-
-✅ **Complete and Production Ready**
-
-The Universal Printer Wizard is fully functional and ready for end-to-end printer discovery and configuration on Linux systems.
-
-## Support
-
-For issues, questions, or contributions, please open an issue on GitHub.
+Built with Rich, pyipp, pysnmp, zeroconf, and CUPS.  
+Made with ❤️ for the Linux community.
 
 ---
 
-**Made with ❤️ for the Linux community**
+⭐ If this tool helped you, please star the repo!

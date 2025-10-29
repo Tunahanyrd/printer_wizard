@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.9', '3.10', '3.11', '3.12']
 
     steps:
     - uses: actions/checkout@v3
@@ -47,11 +47,11 @@ jobs:
     
     - name: Test module imports
       run: |
-        python3 -c "import core; import config; print('✅ Module imports successful')"
+        python3 -c "from src import core, config, tui; print('✅ Module imports successful')"
     
     - name: Test core module
       run: |
-        timeout 10 python3 core.py || true
+        timeout 10 python3 src/core.py || true
       continue-on-error: true
     
     - name: Verify requirements

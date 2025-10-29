@@ -111,11 +111,14 @@ echo "=========================================="
 echo ""
 echo "You can now run the Universal Printer Wizard:"
 echo ""
-echo "  Option 1: Run with sudo (recommended)"
-echo "    sudo ./venv/bin/python3 tui.py"
+echo "  Option 1: Run with virtual environment (recommended)"
+echo "    sudo ./venv/bin/python3 printer_wizard.py"
 echo ""
-echo "  Option 2: Test discovery without installation"
-echo "    ./venv/bin/python3 core.py"
+echo "  Option 2: Run without virtual environment"
+echo "    sudo python3 printer_wizard.py"
+echo ""
+echo "  Option 3: Test discovery without installation"
+echo "    ./venv/bin/python3 src/core.py"
 echo ""
 
 read -p "Would you like to run the wizard now? (y/N) " -n 1 -r
@@ -126,11 +129,11 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "Starting Universal Printer Wizard..."
     echo "=========================================="
     echo ""
-    sudo ./venv/bin/python3 tui.py
+    sudo ./venv/bin/python3 printer_wizard.py
 else
     echo ""
     echo "Run the wizard whenever you're ready:"
-    echo "  sudo ./venv/bin/python3 tui.py"
+    echo "  sudo ./venv/bin/python3 printer_wizard.py"
     echo ""
 fi
 

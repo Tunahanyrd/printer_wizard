@@ -18,27 +18,27 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: System :: Systems Administration",
     "Topic :: Printing",
 ]
 
 [tool.poetry.dependencies]
-python = "^3.8"
-rich = "^14.2.0"
-pyipp = "^0.17.2"
-pysnmp = "^7.1.22"
-zeroconf = "^0.148.0"
-aiohttp = "^3.13.2"
-deepmerge = "^2.0"
-yarl = "^1.22.0"
+python = "^3.9"
+rich = ">=13.0.0"
+pyipp = ">=0.15.0"
+pysnmp = ">=6.0.0"
+zeroconf = ">=0.47.0"
+aiohttp = ">=3.8.0"
+deepmerge = ">=1.0.0"
+yarl = ">=1.8.0"
 
 [tool.poetry.scripts]
-printer-wizard = "tui:main"
+printer-wizard = "src.tui:main"
 
 [build-system]
 requires = ["poetry-core"]

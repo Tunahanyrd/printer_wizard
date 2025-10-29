@@ -59,11 +59,11 @@ python3 --version
 python3 -c "import rich, pyipp, pysnmp, zeroconf; print('All dependencies OK')"
 ```
 
-### Method 2: Using Virtual Environment (Recommended for Development)
+### Method 2: Using Virtual Environment (Recommended)
 
 1. **Clone the repository**:
 ```bash
-git clone https://github.com/yourusername/printer_wizard.git
+git clone https://github.com/Tunahanyrd/printer_wizard.git
 cd printer_wizard
 ```
 
@@ -80,7 +80,7 @@ pip install -r requirements.txt
 
 4. **Run the wizard** (requires sudo):
 ```bash
-sudo ./venv/bin/python3 tui.py
+sudo ./venv/bin/python3 printer_wizard.py
 ```
 
 ### Method 3: System-wide Installation with Poetry
@@ -92,14 +92,14 @@ curl -sSL https://install.python-poetry.org | python3 -
 
 2. **Clone and install**:
 ```bash
-git clone https://github.com/yourusername/printer_wizard.git
+git clone https://github.com/Tunahanyrd/printer_wizard.git
 cd printer_wizard
 poetry install
 ```
 
 3. **Run with Poetry**:
 ```bash
-sudo poetry run python3 tui.py
+sudo poetry run python3 printer_wizard.py
 ```
 
 ## Quick Start
@@ -107,7 +107,11 @@ sudo poetry run python3 tui.py
 After installation, run the wizard:
 
 ```bash
-sudo python3 tui.py
+# With virtual environment (recommended)
+sudo ./venv/bin/python3 printer_wizard.py
+
+# Or without virtual environment
+sudo python3 printer_wizard.py
 ```
 
 Follow the interactive prompts to discover and install your printer.
@@ -117,7 +121,11 @@ Follow the interactive prompts to discover and install your printer.
 ### Test Core Module
 
 ```bash
-python3 core.py
+# With venv
+./venv/bin/python3 src/core.py
+
+# Or without venv
+python3 src/core.py
 ```
 
 This will run a test discovery scan.
@@ -125,7 +133,11 @@ This will run a test discovery scan.
 ### Test Config Module
 
 ```bash
-python3 config.py
+# With venv
+./venv/bin/python3 src/config.py
+
+# Or without venv
+python3 src/config.py
 ```
 
 This will test the CUPS configuration (may require sudo).

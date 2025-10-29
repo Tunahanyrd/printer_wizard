@@ -4,9 +4,9 @@
 
 We currently support the following versions with security updates:
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.0.x   | :white_check_mark: |
+| Version | Supported |
+| ------- | --------- |
+| 1.0.x   | ✅        |
 
 ## Reporting a Vulnerability
 
@@ -15,7 +15,7 @@ We take the security of the Universal Printer Wizard seriously. If you discover 
 ### How to Report
 
 1. **DO NOT** create a public GitHub issue for security vulnerabilities
-2. Email the maintainers directly at: [your-email@example.com]
+2. Email the maintainers directly at: [tunahanyrd@gmail.com]
 3. Include the following information:
    - Description of the vulnerability
    - Steps to reproduce
@@ -57,11 +57,13 @@ Ensure your firewall rules are appropriate for your security requirements.
 ### Input Validation
 
 The wizard validates:
+
 - PPD file paths and extensions
 - IP address formats
 - CUPS model names
 
 However, always:
+
 - Only use PPD files from trusted sources
 - Verify printer IP addresses
 - Use official manufacturer drivers when possible
