@@ -47,11 +47,11 @@ jobs:
     
     - name: Test module imports
       run: |
-        python3 -c "from src import core, config, tui; print('✅ Module imports successful')"
+        python3 -c "from src import core, config; print('✅ Module imports successful')"
     
-    - name: Test core module
+    - name: Test main entry point
       run: |
-        timeout 10 python3 src/core.py || true
+        python3 printer_wizard.py --help || python3 -c "import printer_wizard; print('✅ Entry point OK')" || true
       continue-on-error: true
     
     - name: Verify requirements

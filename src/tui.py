@@ -24,12 +24,18 @@ from typing import Optional
 
 # Import the main functions from our other files
 try:
-    from core import async_discover_printers_passive, async_discover_printer_by_ip
-    from config import configure_cups_printer
-except ImportError as e:
-    print(f"Error: Failed to import required modules (core.py, config.py). {e}")
-    print("Please ensure core.py and config.py are in the same directory.")
-    sys.exit(1)
+    # Try relative import first (when used as module)
+    from .core import async_discover_printers_passive, async_discover_printer_by_ip
+    from .config import configure_cups_printer
+except ImportError:
+    try:
+        # Fall back to absolute import (when run directly)
+        from core import async_discover_printers_passive, async_discover_printer_by_ip
+        from config import configure_cups_printer
+    except ImportError as e:
+        print(f"Error: Failed to import required modules (core.py, config.py). {e}")
+        print("Please ensure core.py and config.py are in the same directory.")
+        sys.exit(1)
 
 console = Console()
 

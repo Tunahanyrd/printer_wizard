@@ -47,40 +47,41 @@ except ImportError:
 try:
     from zeroconf import ServiceBrowser, Zeroconf, ServiceListener
     ZEROCONF_AVAILABLE = True
+    
+    # --- Stage 1: Passive Discovery (The "Easy Button") ---
+    
+    class _ZeroconfPrinterListener(ServiceListener):
+        """Internal listener class for Zeroconf announcements."""
+        def __init__(self):
+            self.found_printers: Dict[str, Dict[str, Any]] = {}
+
+        def _parse_service_info(self, zc: Zeroconf, type: str, name: str) -> Optional[Dict[str, Any]]:
+            """Utility to get and parse info for a found service."""
+            info = zc.get_service_info(type, name)
+            if not info or not info.addresses: return None
+            try:
+                ip_address = socket.inet_ntoa(info.addresses[0])
+                port = info.port
+            except (OSError, IndexError):
+                print(f"\n[Stage 1] Error parsing service info for {name}", file=sys.stderr)
+                return None
+            model = info.properties.get(b'product', b'').decode('utf-8').strip('()')
+            if not model: model = info.properties.get(b'ty', b'').decode('utf-8')
+            if not model: model = name.split('.')[0].replace('-', ' ').replace('_', ' ')
+            return {"model": model, "uri": f"ipp://{ip_address}:{port}/ipp/print", "ip": ip_address}
+
+        def update_service(self, zc: Zeroconf, type: str, name: str) -> None:
+            printer_info = self._parse_service_info(zc, type, name)
+            if printer_info and printer_info['uri'] not in self.found_printers:
+                print(f"\n[Stage 1] Found service: {name}", end="", flush=True)
+                self.found_printers[printer_info['uri']] = printer_info
+
+        def remove_service(self, zc: Zeroconf, type: str, name: str) -> None: pass
+        def add_service(self, zc: Zeroconf, type: str, name: str) -> None: pass
+        
 except ImportError:
     print("Warning: 'zeroconf' library not found. Passive discovery (Stage 1) will be skipped.", file=sys.stderr)
     ZEROCONF_AVAILABLE = False
-
-# --- Stage 1: Passive Discovery (The "Easy Button") ---
-
-class _ZeroconfPrinterListener(ServiceListener):
-    """Internal listener class for Zeroconf announcements."""
-    def __init__(self):
-        self.found_printers: Dict[str, Dict[str, Any]] = {}
-
-    def _parse_service_info(self, zc: Zeroconf, type: str, name: str) -> Optional[Dict[str, Any]]:
-        """Utility to get and parse info for a found service."""
-        info = zc.get_service_info(type, name)
-        if not info or not info.addresses: return None
-        try:
-            ip_address = socket.inet_ntoa(info.addresses[0])
-            port = info.port
-        except (OSError, IndexError):
-            print(f"\n[Stage 1] Error parsing service info for {name}", file=sys.stderr)
-            return None
-        model = info.properties.get(b'product', b'').decode('utf-8').strip('()')
-        if not model: model = info.properties.get(b'ty', b'').decode('utf-8')
-        if not model: model = name.split('.')[0].replace('-', ' ').replace('_', ' ')
-        return {"model": model, "uri": f"ipp://{ip_address}:{port}/ipp/print", "ip": ip_address}
-
-    def update_service(self, zc: Zeroconf, type: str, name: str) -> None:
-        printer_info = self._parse_service_info(zc, type, name)
-        if printer_info and printer_info['uri'] not in self.found_printers:
-            print(f"\n[Stage 1] Found service: {name}", end="", flush=True)
-            self.found_printers[printer_info['uri']] = printer_info
-
-    def remove_service(self, zc: Zeroconf, type: str, name: str) -> None: pass
-    def add_service(self, zc: Zeroconf, type: str, name: str) -> None: pass
 
 async def async_discover_printers_passive(scan_duration: int = 3) -> List[Dict[str, Any]]:
     """STAGE 1: Asynchronously listens on the network via mDNS/Zeroconf."""
