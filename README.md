@@ -1,4 +1,5 @@
 # Universal Printer Wizard
+> note: this repo is a project for our blog. [read](https://funeralcs.com/posts/vibe-coding/)
 
 A smart printer discovery and configuration tool for Linux systems using CUPS. Automatically detects network printers with minimal user intervention.
 
